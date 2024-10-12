@@ -1,48 +1,49 @@
-import {name} from "./main";
-import {email} from "./main";
-import {randomNum} from "./main";
-
-const button = document.getElementById("apply");
+import { getUserData } from "./main"; // Import the function to get user data
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
 
-// Четене на HTML шаблона
+const button = document.getElementById("apply");
+
+// Read the HTML template
 const templatePath = path.join(__dirname, 'emailTemplate.html');
-let htmlTemplate = fs.readFileSync(templatePath, 'utf8');
+let htmlTemplate;
 
-// Динамично заместване на името
-const clientName = 'Клиент'; // Задай името на клиента
-htmlTemplate = htmlTemplate.replace('{{name}}', clientName);
+try {
+    htmlTemplate = fs.readFileSync(templatePath, 'utf8');
+} catch (error) {
+    console.error("Error reading the email template:", error);
+    return; // Exit if the template can't be read
+}
 
-// Създаване на транспорт за имейли
+// Create a transporter for emails
 let transporter = nodemailer.createTransport({
-    host: 'smtp.example.com', // Заменете с вашия SMTP хост
-    port: 587, // Порт (или 465 за SSL)
-    secure: false, // true за 465, false за други портове
+    host: 'smtp.example.com', // Replace with your SMTP host
+    port: 587, // Port (or 465 for SSL)
+    secure: false, // true for 465, false for other ports
     auth: {
-        user: 'app.medichat@gmail.com', // Твоя имейл
-        pass: 'Hrisi_08'     // Паролата за имейла
+        user: process.env.EMAIL_USER || "app.medichat@gmail.com", // Use environment variable or fallback
+        pass: process.env.EMAIL_PASS || "Hrisi_08"  // Use environment variable or fallback
     }
 });
 
-// Опции за изпращане на имейл
-htmlTemplate = htmlTemplate.replace('{{name}}', name); // Заменя {{name}} с името на клиента
-htmlTemplate = htmlTemplate.replace('{{code}}', randomNum );
-let mailOptions = {
-    from: '"MediChat" <app@medichat.app>', // Имейл подател
-    to: `${email}`, // Имейл получател
-    subject: 'Код за достъп до MediChat',
-    html: htmlTemplate // HTML съдържанието на имейла
-};
 button.addEventListener('click', () => {
+    // Get the latest user data each time the button is clicked
+    const { name, email, randomNum } = getUserData();
 
+    // Set up the email options
+    let mailOptions = {
+        from: '"MediChat" <app@medichat.app>', // Sender email
+        to: email, // Recipient email
+        subject: 'Код за достъп до MediChat',
+        html: htmlTemplate.replace('{{name}}', name).replace('{{code}}', randomNum) // HTML content of the email
+    };
 
-// Изпращане на имейл
-transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-        return console.log(error);
-    }
-    console.log('Имейлът е изпратен: %s', info.messageId);
+    // Send the email
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.error("Error sending email:", error);
+        }
+        console.log('Email sent: %s', info.messageId);
+    });
 });
-})
