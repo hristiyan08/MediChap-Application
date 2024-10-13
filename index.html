@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MediChatApplication</title>
     <link rel="stylesheet" href="style.css">
-  
+
 
 </head>
 <body>
@@ -18,5 +18,25 @@
     <input type="email" id="email" class="email" placeholder="Имейл"><br>
     <input type="submit" class="apply-button" value="Кандидатствай!" id="apply">
 </form>
+<script type="module">
+
+    import { getAuth, sendPasswordResetEmail} from  "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+    const auth = getAuth();
+
+
+
+    document.getElementById("apply").addEventListener("click", function emailSend (event){
+        event.PreventDefault();
+        const email = document.getElementById("email");
+        sendPasswordResetEmail(auth, email)
+            .then(() =>{alert("Open your email");})
+            .catch((error)  =>
+            {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+            });
+    })
+</script>
 </body>
 </html>
