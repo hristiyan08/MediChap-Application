@@ -1,0 +1,108 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @media screen and (max-width: 600px) {
+            .logo-image {
+                height: 200px;
+                /* Logo size for smaller screens */
+                width: 200px;
+                /* Fixed from 'weight' to 'width' */
+                position: relative;
+                top: 80px;
+            }
+
+        }
+
+        /* Additional styles for smaller screens */
+        @media screen and (max-width: 300px) {
+            h2 {
+                font-size: 1.5em;
+                /* Adjust font size for smaller screens */
+            }
+
+            p {
+                font-size: 0.9em;
+                /* Adjust font size for smaller screens */
+            }
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            /* Center content vertically */
+            margin: 0;
+            /* Remove default margin */
+            font-family: "Arial";
+        }
+
+        .content {
+            text-align: center;
+            /* Center text for better readability */
+            color: #fff;
+            /* Set text color */
+            position: absolute;
+            bottom: 200px;
+        }
+        img{
+            position: relative; top: 200px;
+        }
+    </style>
+</head>
+
+<body style="background-color: #161622">
+<div style="max-width: 600px; margin: 0 auto;" class="content">
+    <img src="https://medichat-application.vercel.app/images/MediChat_transparent-.png" class="logo-image" style="max-width: 100%; height: auto; "/>
+    <h2>Код за достъп към MediChat</h2>
+    <p>
+        Здравейте!<br> Благодарим ви, че избрахте MediChat! Ето кодът Ви за достъп към платформата:
+        <br><br>
+        <strong id="code"></strong><br><br>
+        Въведете го в полето "Код за достъп" при регистрация в приложението.<br>
+        С уважение,<br> Eкипът на MediChat
+    </p>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js"; // Change from set to push
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDiiAFQ8wsOQDPhNtpz-5OK6vRRaZScBwc",
+        authDomain: "medichat-c9b01.firebaseapp.com",
+        databaseURL: "https://medichat-c9b01-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "medichat-c9b01",
+        storageBucket: "medichat-c9b01.appspot.com",
+        messagingSenderId: "444288721707",
+        appId: "1:444288721707:web:c20c844c3e07406ae95b6e",
+        measurementId: "G-8Y04QRWSVD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase();
+
+    function writeUserData() {
+        const code = Math.floor(10000000 + Math.random() * 90000000);
+        document.getElementById("code").innerHTML = code;
+
+        // Use push to create a new entry with a unique key
+        push(ref(db, 'codes/'), {
+            code: code,
+        })
+            .then(() => {
+                console.log('Code written to database successfully.');
+            })
+            .catch((error) => {
+                console.error('Error writing code to database:', error);
+            });
+    }
+
+    writeUserData();
+</script>
+</body>
+
+</html>
