@@ -21,6 +21,27 @@
 <script type="module">
 
     import { getAuth, sendPasswordResetEmail} from  "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+        apiKey: "AIzaSyDiiAFQ8wsOQDPhNtpz-5OK6vRRaZScBwc",
+        authDomain: "medichat-c9b01.firebaseapp.com",
+        databaseURL: "https://medichat-c9b01-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "medichat-c9b01",
+        storageBucket: "medichat-c9b01.appspot.com",
+        messagingSenderId: "444288721707",
+        appId: "1:444288721707:web:c20c844c3e07406ae95b6e",
+        measurementId: "G-8Y04QRWSVD"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
 
     const auth = getAuth();
 
