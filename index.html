@@ -7,17 +7,18 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<img src="images/MediChat_transparent-.png" height="400" width="400" class="logo-image" alt="MediChat Logo" />
+<img src="images/MediChat_transparent-.png" height="400" width="400" class="logo-image" />
 <h1 class="title">Портал за кандидатстване на лекари към MediChat</h1>
 <form id="application-form">
     <p class="title-text">Моля, попълнете Вашите данни, за да кандидатстване за достъп към MediChat:</p>
-    <input type="text" id="name" class="name" placeholder="Имена" required><br>
-    <input type="text" id="uin" class="uin" placeholder="УИН" required><br>
-    <input type="email" id="email" class="email" placeholder="Имейл" required><br>
+    <input type="text" id="name" class="name" placeholder="Имена"><br>
+    <input type="text" id="uin" class="uin" placeholder="УИН"><br>
+    <input type="email" id="email" class="email" placeholder="Имейл"><br>
     <input type="submit" class="apply-button" value="Кандидатствай!" id="apply">
 </form>
 <script type="module">
-    import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+    import { getAuth, sendSignInLinkToEmail } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 
     const firebaseConfig = {
@@ -34,29 +35,27 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth();
 
-    document.getElementById("application-form").addEventListener("submit", function(event) {
-        event.preventDefault(); // Prevent default form submission
+    // Configure the email action link
+    const actionCodeSettings = {
+        url: 'https://medichat-application.vercel.app/email.html?mode=action&oobCode=code', // Change this to your confirmation page
+        handleCodeInApp: true,
+    };
 
+    document.getElementById("application-form").addEventListener("submit", function (event) {
+        event.preventDefault();
         const email = document.getElementById("email").value;
 
-        // Register the user
-        const password = prompt("Please set a password for your account:"); // Prompt for password
-        createUserWithEmailAndPassword(auth, email, password)
+        // Send sign-in link to the email
+        sendSignInLinkToEmail(auth, email, actionCodeSettings)
             .then(() => {
-                alert("Registration successful! You will receive a confirmation email.");
-                // Send password reset email immediately after registration
-                sendPasswordResetEmail(auth, email)
-                    .then(() => {
-                        alert("Open your email for instructions to reset your password.");
-                    })
-                    .catch((error) => {
-                        const errorMessage = error.message;
-                        alert(`Error sending password reset email: ${errorMessage}`);
-                    });
+                // Save the email locally to complete sign-in when the user returns
+                window.localStorage.setItem('emailForSignIn', email);
+                alert("Open your email to complete the sign-in process.");
             })
             .catch((error) => {
+                const errorCode = error.code;
                 const errorMessage = error.message;
-                alert(`Error during registration: ${errorMessage}`);
+                console.error("Error sending email:", errorCode, errorMessage);
             });
     });
 </script>
