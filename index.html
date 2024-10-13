@@ -11,10 +11,10 @@
 <h1 class="title">Портал за кандидатстване на лекари към MediChat</h1>
 <form id="application-form">
     <p class="title-text">Моля, попълнете Вашите данни, за да кандидатстване за достъп към MediChat:</p>
-    <input type="text" id="name" class="name" placeholder="Имена"><br>
-    <input type="text" id="uin" class="uin" placeholder="УИН"><br>
-    <input type="email" id="email" class="email" placeholder="Имейл"><br>
-    <input type="submit" class="apply-button" value="Кандидатствай!" id="apply">
+    <input type="text" id="name" class="name" placeholder="Имена" required><br>
+    <input type="text" id="uin" class="uin" placeholder="УИН" required><br>
+    <input type="email" id="email" class="email" placeholder="Имейл" required><br>
+    <button type="submit" class="apply-button" id="apply">Кандидатствай!</button>
 </form>
 <script type="module">
 
@@ -41,21 +41,23 @@
         handleCodeInApp: true,
     };
 
-    document.getElementById("apply").addEventListener("click", function (event) {
-        event.preventDefault();
-        const email = document.getElementById("email").value;
+    document.getElementById("application-form").addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent form submission
+
+        const email = document.getElementById("email").value; // Get the email value
 
         // Send sign-in link to the email
         sendSignInLinkToEmail(auth, email, actionCodeSettings)
             .then(() => {
                 // Save the email locally to complete sign-in when the user returns
                 window.localStorage.setItem('emailForSignIn', email);
-                alert("Open your email to complete the sign-in process.");
+                alert("Съобщение с линк за вход е изпратено на Вашия имейл. Моля, проверете!");
             })
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
-                console.error("Error sending email:", errorCode, errorMessage);
+                console.error("Грешка при изпращане на имейл:", errorCode, errorMessage);
+                alert("Възникна грешка: " + errorMessage);
             });
     });
 </script>
