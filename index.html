@@ -17,7 +17,7 @@
     <input type="submit" class="apply-button" value="Кандидатствай!" id="apply">
 </form>
 <script type="module">
-    import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 
     const firebaseConfig = {
@@ -35,17 +35,28 @@
     const auth = getAuth();
 
     document.getElementById("application-form").addEventListener("submit", function(event) {
-        event.preventDefault();
+        event.preventDefault(); // Prevent default form submission
+
         const email = document.getElementById("email").value;
 
-        sendPasswordResetEmail(auth, email)
+        // Register the user
+        const password = prompt("Please set a password for your account:"); // Prompt for password
+        createUserWithEmailAndPassword(auth, email, password)
             .then(() => {
-                alert("Open your email for instructions.");
+                alert("Registration successful! You will receive a confirmation email.");
+                // Send password reset email immediately after registration
+                sendPasswordResetEmail(auth, email)
+                    .then(() => {
+                        alert("Open your email for instructions to reset your password.");
+                    })
+                    .catch((error) => {
+                        const errorMessage = error.message;
+                        alert(`Error sending password reset email: ${errorMessage}`);
+                    });
             })
             .catch((error) => {
-                const errorCode = error.code;
                 const errorMessage = error.message;
-                alert(`Error: ${errorMessage}`);
+                alert(`Error during registration: ${errorMessage}`);
             });
     });
 </script>
